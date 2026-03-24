@@ -370,6 +370,8 @@ input, select, textarea { font-family: inherit; }
   display: grid;
   gap: 20px;
   max-width: 520px;
+  margin: 0 auto;
+  justify-items: center;
 }
 .about-img-main {
   position: relative;
