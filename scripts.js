@@ -1,25 +1,19 @@
-/* ====================================================
-   Vision International School – scripts.js
-   ==================================================== */
-
 'use strict';
 
-// ───────────── DOM Ready ─────────────
 document.addEventListener('DOMContentLoaded', () => {
   initParticles();
   initNavbar();
   initHamburger();
   initAOS();
+  initScrollReveal();
   initCounters();
   initTestimonials();
   initScrollTop();
   initForms();
   initActiveNav();
+  initCardTilt();
 });
 
-/* ══════════════════════════════════════
-   1. HERO PARTICLES
-══════════════════════════════════════ */
 function initParticles() {
   const container = document.getElementById('particles');
   if (!container) return;
@@ -40,22 +34,14 @@ function initParticles() {
   }
 }
 
-/* ══════════════════════════════════════
-   2. NAVBAR SCROLL
-══════════════════════════════════════ */
 function initNavbar() {
   const nav = document.getElementById('navbar');
   if (!nav) return;
-  const onScroll = () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  };
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 }
 
-/* ══════════════════════════════════════
-   3. HAMBURGER MENU
-══════════════════════════════════════ */
 function initHamburger() {
   const btn = document.getElementById('hamburger');
   const links = document.getElementById('navLinks');
@@ -68,7 +54,6 @@ function initHamburger() {
     document.body.style.overflow = open ? 'hidden' : '';
   });
 
-  // Close on link click
   links.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
       links.classList.remove('open');
@@ -77,25 +62,11 @@ function initHamburger() {
       document.body.style.overflow = '';
     });
   });
-
-  // Close on outside click
-  document.addEventListener('click', e => {
-    if (!btn.contains(e.target) && !links.contains(e.target)) {
-      links.classList.remove('open');
-      btn.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
 }
 
-/* ══════════════════════════════════════
-   4. SIMPLE AOS (Animate On Scroll)
-══════════════════════════════════════ */
 function initAOS() {
   const items = document.querySelectorAll('[data-aos]');
   if (!items.length) return;
-
-  // Apply transition delays
   items.forEach(el => {
     const delay = el.getAttribute('data-delay') || 0;
     el.style.transitionDelay = delay + 'ms';
@@ -113,9 +84,27 @@ function initAOS() {
   items.forEach(el => observer.observe(el));
 }
 
-/* ══════════════════════════════════════
-   5. COUNTER ANIMATION
-══════════════════════════════════════ */
+function initScrollReveal() {
+  const targets = document.querySelectorAll(
+    '.section-header, .about-grid, .facilities-grid, .classes-grid, .book-grid, .testimonials-track-wrap, .team-grid, .contact-grid, .footer-top'
+  );
+  if (!targets.length) return;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+  targets.forEach(el => {
+    el.classList.add('scroll-reveal');
+    observer.observe(el);
+  });
+}
+
 function initCounters() {
   const counters = document.querySelectorAll('.stat-num[data-target]');
   if (!counters.length) return;
@@ -147,9 +136,6 @@ function initCounters() {
   counters.forEach(el => observer.observe(el));
 }
 
-/* ══════════════════════════════════════
-   6. TESTIMONIAL SLIDER
-══════════════════════════════════════ */
 function initTestimonials() {
   const slider = document.getElementById('testiSlider');
   const prevBtn = document.getElementById('testiPrev');
@@ -161,7 +147,6 @@ function initTestimonials() {
   let current = 0;
   let autoInterval;
 
-  // Create dots
   cards.forEach((_, i) => {
     const dot = document.createElement('button');
     dot.className = 'testi-dot' + (i === 0 ? ' active' : '');
@@ -171,7 +156,6 @@ function initTestimonials() {
   });
 
   function getCardWidth() {
-    // Cards in slider
     const card = cards[0];
     if (!card) return 0;
     const sliderStyle = window.getComputedStyle(slider);
@@ -200,10 +184,8 @@ function initTestimonials() {
     autoInterval = setInterval(() => goTo(current + 1), 5000);
   }
 
-  // Auto play
   autoInterval = setInterval(() => goTo(current + 1), 5000);
 
-  // Touch/swipe support
   let touchStartX = 0;
   slider.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
   slider.addEventListener('touchend', e => {
@@ -221,29 +203,20 @@ function initTestimonials() {
     }
   }, { passive: true });
 
-  // Re-align on resize
   window.addEventListener('resize', () => goTo(current));
 }
 
-/* ══════════════════════════════════════
-   7. SCROLL TO TOP BUTTON
-══════════════════════════════════════ */
 function initScrollTop() {
   const btn = document.getElementById('scrollTop');
   if (!btn) return;
-
   window.addEventListener('scroll', () => {
     btn.classList.toggle('visible', window.scrollY > 600);
   }, { passive: true });
-
   btn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
-/* ══════════════════════════════════════
-   8. FORM HANDLING
-══════════════════════════════════════ */
 function showToast(message, duration = 3000) {
   const toast = document.getElementById('toast');
   const msg = document.getElementById('toastMsg');
@@ -254,7 +227,6 @@ function showToast(message, duration = 3000) {
 }
 
 function initForms() {
-  // Enrollment Form
   const bookForm = document.getElementById('bookForm');
   if (bookForm) {
     bookForm.addEventListener('submit', e => {
@@ -276,7 +248,6 @@ function initForms() {
     });
   }
 
-  // Newsletter Form
   const newsletterForm = document.getElementById('newsletterForm');
   if (newsletterForm) {
     newsletterForm.addEventListener('submit', e => {
@@ -287,9 +258,6 @@ function initForms() {
   }
 }
 
-/* ══════════════════════════════════════
-   9. ACTIVE NAV LINK ON SCROLL
-══════════════════════════════════════ */
 function initActiveNav() {
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-link');
@@ -310,19 +278,18 @@ function initActiveNav() {
   sections.forEach(s => observer.observe(s));
 }
 
-/* ══════════════════════════════════════
-   10. SMOOTH HOVER TILT ON CLASS CARDS
-══════════════════════════════════════ */
-document.querySelectorAll('.class-card, .facility-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
-    const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
-    card.style.transform = `perspective(800px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-8px)`;
+function initCardTilt() {
+  document.querySelectorAll('.class-card, .facility-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+      const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+      card.style.transform = `perspective(800px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-8px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+      card.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1)';
+      setTimeout(() => card.style.transition = '', 500);
+    });
   });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = '';
-    card.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1)';
-    setTimeout(() => card.style.transition = '', 500);
-  });
-});
+}
